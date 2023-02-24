@@ -1,9 +1,10 @@
+using System.Net;
 using Ardalis.GuardClauses;
+using AutoMapper;
 using Azure.Storage.Queues;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using Profile.Api.Controllers;
-using Profile.Api.Data;
 using Profile.Api.V1.Model;
 
 namespace Profile.Api.V1.Controllers;
@@ -15,34 +16,53 @@ public class ProfileController : BaseApiController
 {
 
     private readonly CosmosClient _cosmosClient;
-
-    private readonly IQueueClientFactory _clientFactory;
     
     private readonly QueueClient _queueClient;
+
+    private readonly IConfiguration _configuration;
+
+    private readonly IMapper _mapper;
     
     
-    public ProfileController(CosmosClient client, IQueueClientFactory clientFactory)
+    public ProfileController(CosmosClient client, IMapper mapper, IConfiguration configuration)
     {
         Guard.Against.Null(client, nameof(client));
-        
+        Guard.Against.Null(mapper, nameof(mapper));
+        Guard.Against.Null(configuration, nameof(configuration));
+        _mapper = mapper;
         _cosmosClient = client;
+        _configuration = configuration;
 
-        _queueClient = clientFactory.Create("somename");
     }
     
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateBookRequest request, CancellationToken token)
+    public async Task<HttpStatusCode> Create([FromBody] CreateProfileRequest request, CancellationToken token)
     {
+
+        Guard.Against.Null(request, nameof(request));
+        
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            return HttpStatusCode.BadRequest;
         }
 
-        var container = _cosmosClient.GetContainer("asdfasdf", "asdfasdf");
-
-        var item = container.CreateItemAsync(request, cancellationToken: token);
+        ProfileDto profileDto = _mapper.Map<ProfileDto>(request);
         
-        return CreatedAtAction("Get", null, request);
+        string databaseId=  _configuration.GetValue<string>("CosmosDb:DatabaseId");
+        
+        string containerId=  _configuration.GetValue<string>("CosmosDb:ContainerId");
+
+        var container = _cosmosClient.GetContainer(databaseId, containerId);
+
+        try
+        {
+            var item = container.CreateItemAsync(profileDto, cancellationToken: token);
+            return HttpStatusCode.OK;
+        }
+        catch (Exception e)
+        {
+            return HttpStatusCode.InternalServerError;
+        }
     }
     
     
