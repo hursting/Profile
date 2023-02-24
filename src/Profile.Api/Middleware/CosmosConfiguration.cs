@@ -1,5 +1,4 @@
 using Microsoft.Azure.Cosmos;
-using Profile.Api.Data;
 
 namespace Profile.Api.Middleware;
 
@@ -22,15 +21,5 @@ public static class CosmosConfiguration
             });
         });
     
-    public static IServiceCollection AddQueueClient(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddSingleton<IQueueClientFactory>(ctx =>
-        {
-            string connectionString = configuration.GetValue<string>("AzureStorageQueue:ConnectionString");
-
-            return new QueueClientFactory(connectionString);
-        });
-
-        return services;
-    }
+   
 }
