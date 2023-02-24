@@ -203,3 +203,5 @@ cordova.js
 /coverage.xml
 BenchmarkDotNet.Artifacts
 /.sonarqube
+*.idea
+*.idea/
