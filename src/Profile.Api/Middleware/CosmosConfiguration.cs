@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.Azure.Cosmos;
 
 namespace Profile.Api.Middleware;
@@ -21,5 +22,17 @@ public static class CosmosConfiguration
             });
         });
     
+    public static IServiceCollection AddAutoMapper(this IServiceCollection services, IConfiguration configuration)
+    {
+        var config = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile<MappingProfile>();
+        });
+
+        var mapper = config.CreateMapper();
+        services.AddSingleton(mapper);
+
+        return services;
+    }
    
 }

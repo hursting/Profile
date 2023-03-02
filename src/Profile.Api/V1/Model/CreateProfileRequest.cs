@@ -21,15 +21,13 @@ public class CreateProfileRequest
     public int Age { get; set; }
 
     [Display(Name = "Gender")]
-    public Sex Sex { get; set; }
+    public string Sex { get; set; }
     
     [Required]
     [Display(Name = "Occupation")]
     public string Occupation { get; set; }
 
-    [Required]
-    [Display(Name = "Birthday")]
-    public DateOnly Birthday { get; set; }
+   
     
     
 }

@@ -47,6 +47,8 @@ public class ProfileController : BaseApiController
         }
 
         ProfileDto profileDto = _mapper.Map<ProfileDto>(request);
+
+        profileDto.Id = Guid.NewGuid().ToString();
         
         string databaseId=  _configuration.GetValue<string>("CosmosDb:DatabaseId");
         
@@ -56,7 +58,9 @@ public class ProfileController : BaseApiController
 
         try
         {
-            var item = container.CreateItemAsync(profileDto, cancellationToken: token);
+       
+            ItemResponse<ProfileDto> response = await container.CreateItemAsync(profileDto, cancellationToken: token);
+            
             return HttpStatusCode.OK;
         }
         catch (Exception e)

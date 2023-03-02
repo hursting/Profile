@@ -4,6 +4,8 @@ namespace Profile.Api;
 
 public class ProfileDto
 {
+    public string Id { get; set; }
+    
     public string Title { get; set; }
     
     public string Surname { get; set; }
@@ -14,5 +16,4 @@ public class ProfileDto
     
     public string Occupation { get; set; }
     
-    public DateOnly Birthday { get; set; }
 }
